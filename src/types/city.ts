@@ -1,4 +1,3 @@
-export interface CityResponse {
-  cityName: string;
-  citySymbol: number;
-}
+import { City } from "@/app/generated/prisma/client";
+
+export type CityResponse = Pick<City, "cityName" | "citySymbol">;

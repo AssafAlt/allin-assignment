@@ -1,43 +1,20 @@
-import { NextResponse } from "next/server";
 import { getStreetsByCity } from "@/services/street-service";
+import { apiError, apiSuccess, getSearchParams } from "@/lib/api-utils";
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-
-    const citySymbolStr = searchParams.get("citySymbol");
-    const search = searchParams.get("search") || "";
-    const pageStr = searchParams.get("page") || "0";
-
-    const citySymbol = parseInt(citySymbolStr || "");
+    const { search, page, citySymbol } = getSearchParams(request.url);
     if (isNaN(citySymbol)) {
-      return NextResponse.json(
-        {
-          error: "Invalid input",
-          message: "citySymbol must be a valid number",
-        },
-        { status: 400 },
-      );
+      return apiError("citySymbol must be a valid number", 400);
     }
-
-    const page = parseInt(pageStr);
     if (isNaN(page) || page < 0) {
-      return NextResponse.json(
-        {
-          error: "Invalid input",
-          message: "page must be a non-negative number",
-        },
-        { status: 400 },
-      );
+      return apiError("page must be a non-negative number", 400);
     }
 
     const streets = await getStreetsByCity(citySymbol, search, page);
-    return NextResponse.json(streets, { status: 200 });
+    return apiSuccess(streets);
   } catch (error) {
     console.error("Street API Error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch streets" },
-      { status: 500 },
-    );
+    return apiError("Failed to fetch streets");
   }
 }
