@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model City {
+  id                Int      @id 
+  citySymbol        Int      @unique 
+  cityName          String   @default("") 
+  cityEnglishName   String   @default("")
+  districtSymbol    Int      @default(0)
+  districtName      String   @default("")
+  bureauSymbol      Int      @default(0)
+  bureauName        String   @default("")
+  councilSymbol     Int      @default(0)
+  councilName       String   @default("")
+  
+  streets           Street[]
+
+  @@index([cityName])
+}
+
+model Street {
+  id            Int      @id 
+  streetSymbol  Int      @default(0)
+  streetName    String   @default("")
+  citySymbol    Int      
+  city          City     @relation(fields: [citySymbol], references: [citySymbol])
+
+  @@index([citySymbol])
+  @@index([streetName])
+}
