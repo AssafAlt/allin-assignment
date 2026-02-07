@@ -22,6 +22,21 @@ export default function StreetSelector({
   const [isOpen, setIsOpen] = useState(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // --- Click Outside Logic ---
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // --- The Core Fetch Logic ---
   const fetchData = useCallback(
@@ -30,7 +45,6 @@ export default function StreetSelector({
 
       setLoading(true);
 
-      // Abort previous request if starting a fresh search
       if (isNew && abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -47,7 +61,7 @@ export default function StreetSelector({
         const data: StreetResponse[] = await res.json();
 
         setStreets((prev) => (isNew ? data : [...prev, ...data]));
-        setHasMore(data.length === 20); // Adjust based on your API limit
+        setHasMore(data.length === 20);
         setPage(pageNum);
       } catch (err: any) {
         if (err.name !== "AbortError")
@@ -59,7 +73,7 @@ export default function StreetSelector({
     [citySymbol],
   );
 
-  // --- 1. Effect: Debounced Search & City Change ---
+  // --- Effect: Debounced Search & City Change ---
   useEffect(() => {
     const handler = setTimeout(() => {
       fetchData(0, true, searchTerm);
@@ -71,7 +85,7 @@ export default function StreetSelector({
     };
   }, [searchTerm, citySymbol, fetchData]);
 
-  // --- 2. Trigger: Infinite Scroll ---
+  // --- Trigger: Infinite Scroll ---
   const loadMoreRef = useIntersectionObserver(
     () => {
       if (!loading && hasMore) {
@@ -87,8 +101,15 @@ export default function StreetSelector({
     onSelect(street);
   };
 
+  const handleClear = () => {
+    setSearchTerm("");
+    setIsOpen(false);
+    onSelect(null);
+  };
+
   return (
     <div
+      ref={containerRef}
       className={`relative w-full max-w-md space-y-2 transition-all ${!citySymbol ? "opacity-40 grayscale pointer-events-none" : ""}`}
     >
       <label className="block text-sm font-semibold text-gray-700">
@@ -98,7 +119,7 @@ export default function StreetSelector({
       <div className="relative">
         <input
           type="text"
-          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 outline-none"
+          className="w-full p-3 pr-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 outline-none"
           placeholder={
             citySymbol ? "Start typing a street..." : "Select a city first"
           }
@@ -106,17 +127,40 @@ export default function StreetSelector({
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setIsOpen(true);
-            onSelect(null); // Reset selection on type
+            // Note: We are keeping the display logic stable
+            // by not calling onSelect(null) here yet.
           }}
           onFocus={() => setIsOpen(true)}
           disabled={!citySymbol}
         />
 
-        {loading && (
-          <div className="absolute right-3 top-3.5">
+        {/* Action Icons (Clear or Loading) */}
+        <div className="absolute right-3 top-3.5 flex items-center gap-2">
+          {searchTerm && !loading && (
+            <button
+              onClick={handleClear}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+              type="button"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          )}
+
+          {loading && (
             <div className="animate-spin h-5 w-5 border-2 border-green-500 border-t-transparent rounded-full"></div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {isOpen && citySymbol && (searchTerm !== "" || streets.length > 0) && (
@@ -141,7 +185,6 @@ export default function StreetSelector({
             </div>
           )}
 
-          {/* Observer Trigger */}
           <div
             ref={loadMoreRef}
             className="h-10 flex items-center justify-center"

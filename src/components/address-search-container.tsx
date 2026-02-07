@@ -26,7 +26,6 @@ export default function AddressSearchContainer() {
       <div className="flex flex-col gap-8">
         <CitySelector onSelect={handleCitySelect} />
 
-        {/* The 'key' forces a full reset of the StreetSelector when city changes */}
         <StreetSelector
           key={selectedCity?.citySymbol ?? "empty"}
           citySymbol={selectedCity?.citySymbol ?? null}
