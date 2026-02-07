@@ -13,35 +13,43 @@ export default function SelectionDisplay({
   street,
 }: SelectionDisplayProps) {
   return (
-    <div className="w-full max-w-md mt-8 p-6 bg-white border border-blue-100 rounded-xl shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-        הבחירה שלך
-      </h3>
+    <div className="w-full mt-10 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/50 backdrop-blur-sm transition-all duration-500 hover:border-blue-200">
+      <div className="bg-white px-6 py-4 border-b border-slate-100">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500">
+          סיכום בחירה
+        </h3>
+      </div>
 
-      <div className="space-y-4" dir="rtl">
-        {city ? (
-          <div className="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
-            <span className="text-sm text-gray-500">עיר :</span>
-            <span className="font-bold text-blue-700">{city.cityName}</span>
+      <div className="p-6 space-y-4" dir="rtl">
+        <div className="flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-2 h-2 rounded-full ${city ? "bg-blue-500 animate-pulse" : "bg-slate-300"}`}
+            />
+            <span className="text-sm font-medium text-slate-600">עיר</span>
           </div>
-        ) : (
-          <div className="text-center py-2 text-sm text-amber-600 italic">
-            בבקשה תבחר עיר...
-          </div>
-        )}
+          <span
+            className={`text-lg font-semibold transition-all duration-300 ${city ? "text-slate-900" : "text-slate-400 italic font-normal text-sm"}`}
+          >
+            {city ? city.cityName : "טרם נבחרה עיר"}
+          </span>
+        </div>
 
-        {street ? (
-          <div className="flex justify-between items-center bg-green-50 p-3 rounded-lg">
-            <span className="text-sm text-gray-500">רחוב :</span>
-            <span className="font-bold text-green-700">
-              {street.streetName}
-            </span>
+        <div className="h-px bg-slate-200 w-full" />
+
+        <div className="flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-2 h-2 rounded-full ${street ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`}
+            />
+            <span className="text-sm font-medium text-slate-600">רחוב</span>
           </div>
-        ) : (
-          <div className="text-center py-2 text-sm text-amber-600 italic">
-            בבקשה תבחר רחוב...
-          </div>
-        )}
+          <span
+            className={`text-lg font-semibold transition-all duration-300 ${street ? "text-slate-900" : "text-slate-400 italic font-normal text-sm"}`}
+          >
+            {street ? street.streetName : "טרם נבחר רחוב"}
+          </span>
+        </div>
       </div>
     </div>
   );
