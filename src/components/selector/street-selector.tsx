@@ -44,7 +44,7 @@ export default function StreetSelector({
   };
 
   return (
-    <BaseSelector<StreetResponse>
+    <BaseSelector
       label="רחוב"
       placeholder={citySymbol ? "תתחיל לחפש את העיר..." : "קודם כל תבחר עיר"}
       searchTerm={searchTerm}

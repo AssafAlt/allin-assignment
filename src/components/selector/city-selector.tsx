@@ -1,7 +1,7 @@
 "use client";
 
 import { CityResponse } from "@/types/city";
-import BaseSelector from "./base-selector"; // Adjust path as needed
+import BaseSelector from "./base-selector";
 import { useAutocomplete } from "@/hooks/use-autocomplete";
 
 interface CitySelectorProps {
@@ -39,7 +39,7 @@ export default function CitySelector({ onSelect }: CitySelectorProps) {
   };
 
   return (
-    <BaseSelector<CityResponse>
+    <BaseSelector
       label="עיר"
       placeholder="תתחיל לחפש את שם העיר..."
       searchTerm={searchTerm}
