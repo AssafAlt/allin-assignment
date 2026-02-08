@@ -9,9 +9,9 @@ export async function GET(request: Request) {
       return apiError("Page must be a non-negative number", 400);
     }
 
-    const cities = await getCities(search, page);
+    const results = await getCities(search, page);
 
-    return apiSuccess(cities);
+    return apiSuccess(results);
   } catch (error) {
     console.error("Cities API Error:", error);
     return apiError("Failed to fetch cities");

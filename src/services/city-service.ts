@@ -1,12 +1,13 @@
 import prisma from "@/lib/prisma";
+import { PaginatedResponse } from "@/types/service";
 import { CityResponse } from "@/types/city";
 
 export async function getCities(
   search: string,
   page: number = 0,
-): Promise<CityResponse[]> {
+): Promise<PaginatedResponse<CityResponse>> {
   const pageSize = 20;
-  return await prisma.city.findMany({
+  const cities = await prisma.city.findMany({
     where: {
       cityName: { contains: search, mode: "insensitive" },
     },
@@ -14,8 +15,12 @@ export async function getCities(
       cityName: true,
       citySymbol: true,
     },
-    take: pageSize,
+    take: pageSize + 1,
     skip: page * pageSize,
     orderBy: { cityName: "asc" },
   });
+  const hasMore = cities.length > pageSize;
+  const items = hasMore ? cities.slice(0, pageSize) : cities;
+
+  return { items, hasMore };
 }

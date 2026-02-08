@@ -8,6 +8,7 @@ import {
   DependencyList,
 } from "react";
 import { useIntersectionObserver } from "./use-intersection-observer";
+import { PaginatedResponse } from "@/types/service";
 
 interface UseAutocompleteProps {
   fetchUrl: (searchTerm: string, page: number) => string;
@@ -48,21 +49,25 @@ export function useAutocomplete<T>({
         const res = await fetch(url, { signal: controller.signal });
 
         if (!res.ok) throw new Error("Fetch failed");
-        const data: T[] = await res.json();
+        const data = await res.json();
+        const {
+          items: newItems,
+          hasMore: paginatedHasMore,
+        }: PaginatedResponse<T> = data;
+        setItems((prev) => (isNew ? newItems : [...prev, ...newItems]));
+        setHasMore(paginatedHasMore);
 
-        setItems((prev) => (isNew ? data : [...prev, ...data]));
-        setHasMore(data.length === 20);
         setPage(pageNum);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          if (err.name !== "AbortError") {
-            console.error("Autocomplete Error:", err.message);
-          }
+        if (err instanceof Error && err.name !== "AbortError") {
+          console.error("Autocomplete Error:", err.message);
         } else {
           console.error("An unexpected error occurred:", err);
         }
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     },
     [stableFetchUrl, enabled],
