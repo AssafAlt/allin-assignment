@@ -12,6 +12,7 @@ export default function CitySelector({ onSelect }: CitySelectorProps) {
   const {
     searchTerm,
     setSearchTerm,
+    selectSearchTerm,
     items,
     loading,
     hasMore,
@@ -27,7 +28,7 @@ export default function CitySelector({ onSelect }: CitySelectorProps) {
   });
 
   const handleSelect = (city: CityResponse) => {
-    setSearchTerm(city.cityName);
+    selectSearchTerm(city.cityName);
     setIsOpen(false);
     onSelect(city);
   };

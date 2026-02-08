@@ -28,6 +28,7 @@ export function useAutocomplete<T>({
   const [hasMore, setHasMore] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const isChangeBySelect = useRef(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -73,14 +74,26 @@ export function useAutocomplete<T>({
     [stableFetchUrl, enabled],
   );
 
+  const selectSearchTerm = useCallback((newTerm: string) => {
+    isChangeBySelect.current = true;
+    setSearchTerm(newTerm);
+    setIsOpen(false);
+  }, []);
+
   useEffect(() => {
+    if (isChangeBySelect.current) {
+      isChangeBySelect.current = false;
+      return;
+    }
     const handler = setTimeout(() => {
       fetchData(0, true, searchTerm);
     }, 300);
 
     return () => {
       clearTimeout(handler);
-      if (abortControllerRef.current) abortControllerRef.current.abort();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
   }, [searchTerm, fetchData]);
 
@@ -140,6 +153,7 @@ export function useAutocomplete<T>({
   return {
     searchTerm,
     setSearchTerm,
+    selectSearchTerm,
     items,
     setItems,
     loading,

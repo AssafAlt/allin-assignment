@@ -15,6 +15,7 @@ export default function StreetSelector({
 }: StreetSelectorProps) {
   const {
     searchTerm,
+    selectSearchTerm,
     setSearchTerm,
     items,
     loading,
@@ -32,7 +33,7 @@ export default function StreetSelector({
   });
 
   const handleSelect = (street: StreetResponse) => {
-    setSearchTerm(street.streetName);
+    selectSearchTerm(street.streetName);
     setIsOpen(false);
     onSelect(street);
   };
