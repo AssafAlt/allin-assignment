@@ -49,7 +49,7 @@ export default function BaseSelector<T>({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full max-w-md space-y-2 transition-all ${disabled ? "opacity-40 grayscale pointer-events-none" : ""}`}
+      className={`relative w-full  space-y-2 transition-all ${disabled ? "opacity-40 grayscale pointer-events-none" : ""}`}
     >
       <label className="block text-sm font-semibold text-gray-700">
         {label}
@@ -75,7 +75,7 @@ export default function BaseSelector<T>({
             <button
               onClick={onClear}
               type="button"
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
