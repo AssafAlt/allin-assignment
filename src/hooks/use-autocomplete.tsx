@@ -149,6 +149,8 @@ export function useAutocomplete<T>({
           break;
 
         case "Escape":
+          e.preventDefault();
+          (e.target as HTMLInputElement).blur();
           setIsOpen(false);
           break;
       }
