@@ -13,24 +13,13 @@ export default function StreetSelector({
   citySymbol,
   onSelect,
 }: StreetSelectorProps) {
-  const {
-    searchTerm,
-    selectSearchTerm,
-    setSearchTerm,
-    items,
-    loading,
-    hasMore,
-    isOpen,
-    setIsOpen,
-    loadMoreRef,
-    activeIndex,
-    onKeyDown,
-  } = useAutocomplete<StreetResponse>({
-    fetchUrl: (term, page) =>
-      `/api/streets?citySymbol=${citySymbol}&search=${encodeURIComponent(term)}&page=${page}`,
-    enabled: !!citySymbol,
-    deps: [citySymbol],
-  });
+  const { selectSearchTerm, setIsOpen, setSearchTerm, ...autocompleteProps } =
+    useAutocomplete<StreetResponse>({
+      fetchUrl: (term, page) =>
+        `/api/streets?citySymbol=${citySymbol}&search=${encodeURIComponent(term)}&page=${page}`,
+      enabled: !!citySymbol,
+      deps: [citySymbol],
+    });
 
   const handleSelect = (street: StreetResponse) => {
     selectSearchTerm(street.streetName);
@@ -48,20 +37,13 @@ export default function StreetSelector({
     <BaseSelector
       label="רחוב"
       placeholder={citySymbol ? "תתחיל לחפש את העיר..." : "קודם כל תבחר עיר"}
-      searchTerm={searchTerm}
       setSearchTerm={setSearchTerm}
-      isOpen={isOpen}
       setIsOpen={setIsOpen}
-      items={items}
-      loading={loading}
-      hasMore={hasMore}
       onClear={handleClear}
       onSelect={handleSelect}
-      loadMoreRef={loadMoreRef}
       disabled={!citySymbol}
       displayKeys={{ name: "streetName", symbol: "streetSymbol" }}
-      activeIndex={activeIndex}
-      onKeyDown={onKeyDown}
+      {...autocompleteProps}
     />
   );
 }

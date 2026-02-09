@@ -11,9 +11,7 @@ export interface BaseSelectorProps<T> {
   onClear: () => void;
   onSelect: (item: T) => void;
   displayKeys: { name: keyof T; symbol: keyof T };
-  loadMoreRef:
-    | React.RefObject<HTMLDivElement | null>
-    | ((node?: Element | null) => void);
+  loadMoreRef: (node: HTMLElement | null) => void;
   activeIndex: number;
   onKeyDown: (e: React.KeyboardEvent, onSelect: (item: T) => void) => void;
   disabled?: boolean;

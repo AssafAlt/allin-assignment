@@ -16,11 +16,28 @@ interface UseAutocompleteProps {
   deps?: DependencyList;
 }
 
+interface UseAutocompleteReturn<T> {
+  searchTerm: string;
+  items: T[];
+  loading: boolean;
+  hasMore: boolean;
+  isOpen: boolean;
+  activeIndex: number;
+
+  setSearchTerm: (value: string) => void;
+  setItems: React.Dispatch<React.SetStateAction<T[]>>;
+  setIsOpen: (open: boolean) => void;
+  selectSearchTerm: (newTerm: string) => void;
+
+  loadMoreRef: (node: HTMLElement | null) => void;
+  onKeyDown: (e: React.KeyboardEvent, onSelectItem: (item: T) => void) => void;
+}
+
 export function useAutocomplete<T>({
   fetchUrl,
   enabled = true,
   deps = [],
-}: UseAutocompleteProps) {
+}: UseAutocompleteProps): UseAutocompleteReturn<T> {
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState<T[]>([]);
   const [page, setPage] = useState(0);

@@ -120,7 +120,7 @@ export default function BaseSelector<T>({
           )}
 
           <div
-            ref={loadMoreRef as any}
+            ref={loadMoreRef}
             className="h-10 flex items-center justify-center"
           >
             {hasMore && !loading && (
