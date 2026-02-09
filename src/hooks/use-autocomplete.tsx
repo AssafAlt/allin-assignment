@@ -38,12 +38,13 @@ export function useAutocomplete<T>({
   const fetchData = useCallback(
     async (pageNum: number, isNew: boolean, currentTerm: string) => {
       if (!enabled) return;
-      setLoading(true);
 
       abortControllerRef.current?.abort();
 
       const controller = new AbortController();
       abortControllerRef.current = controller;
+
+      setLoading(true);
 
       try {
         const url = stableFetchUrl(currentTerm, pageNum);
@@ -52,10 +53,11 @@ export function useAutocomplete<T>({
         if (!res.ok) throw new Error("Fetch failed");
         const data: PaginatedResponse<T> = await res.json();
 
-        setItems((prev) => (isNew ? data.items : [...prev, ...data.items]));
-        setHasMore(data.hasMore);
-
-        setPage(pageNum);
+        if (!controller.signal.aborted) {
+          setItems((prev) => (isNew ? data.items : [...prev, ...data.items]));
+          setHasMore(data.hasMore);
+          setPage(pageNum);
+        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name !== "AbortError") {
           console.error("Autocomplete Error:", err.message);
@@ -63,7 +65,7 @@ export function useAutocomplete<T>({
           console.error("An unexpected error occurred:", err);
         }
       } finally {
-        if (!controller.signal.aborted) {
+        if (abortControllerRef.current === controller) {
           setLoading(false);
         }
       }
@@ -88,9 +90,6 @@ export function useAutocomplete<T>({
 
     return () => {
       clearTimeout(handler);
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
     };
   }, [searchTerm, fetchData]);
 
