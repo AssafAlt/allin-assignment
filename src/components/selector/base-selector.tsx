@@ -2,6 +2,8 @@
 
 import { useRef, useEffect, useLayoutEffect } from "react";
 import { BaseSelectorProps } from "@/types/selector";
+import { CloseCircleIcon } from "../icons/CloseCircleIcon";
+import { SearchIcon } from "../icons/SearchIcon";
 
 export default function BaseSelector<T>({
   label,
@@ -71,24 +73,14 @@ export default function BaseSelector<T>({
         />
 
         <div className="absolute left-3 top-3.5 flex items-center gap-2">
+          {!searchTerm && !loading && <SearchIcon />}
           {searchTerm && !loading && (
             <button
               onClick={onClear}
               type="button"
               className="text-gray-400 hover:text-gray-600 cursor-pointer"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <CloseCircleIcon />
             </button>
           )}
         </div>
