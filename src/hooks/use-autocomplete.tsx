@@ -29,6 +29,7 @@ export function useAutocomplete<T>({
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const isChangeBySelect = useRef(false);
+  const prevItemsLength = useRef(items.length);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -39,9 +40,8 @@ export function useAutocomplete<T>({
       if (!enabled) return;
       setLoading(true);
 
-      if (isNew && abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
+
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
@@ -50,13 +50,10 @@ export function useAutocomplete<T>({
         const res = await fetch(url, { signal: controller.signal });
 
         if (!res.ok) throw new Error("Fetch failed");
-        const data = await res.json();
-        const {
-          items: newItems,
-          hasMore: paginatedHasMore,
-        }: PaginatedResponse<T> = data;
-        setItems((prev) => (isNew ? newItems : [...prev, ...newItems]));
-        setHasMore(paginatedHasMore);
+        const data: PaginatedResponse<T> = await res.json();
+
+        setItems((prev) => (isNew ? data.items : [...prev, ...data.items]));
+        setHasMore(data.hasMore);
 
         setPage(pageNum);
       } catch (err: unknown) {
@@ -111,10 +108,19 @@ export function useAutocomplete<T>({
   }, [items]);
 
   useEffect(() => {
-    if (activeIndex >= 0 && activeIndex === items.length - 21) {
-      setActiveIndex(activeIndex + 1);
+    if (!isOpen) {
+      setActiveIndex(-1);
     }
-  }, [items.length]);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (items.length > prevItemsLength.current && activeIndex >= 0) {
+      if (activeIndex === prevItemsLength.current - 1) {
+        setActiveIndex(prevItemsLength.current);
+      }
+    }
+    prevItemsLength.current = items.length;
+  }, [items.length, activeIndex]);
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent, onSelectItem: (item: T) => void) => {
