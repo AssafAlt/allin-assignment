@@ -72,17 +72,24 @@ export default function BaseSelector<T>({
           disabled={disabled}
         />
 
-        <div className="absolute left-3 top-3.5 flex items-center gap-2">
-          {!searchTerm && !loading && <SearchIcon />}
-          {searchTerm && !loading && (
-            <button
-              onClick={onClear}
-              type="button"
-              className="text-gray-400 hover:text-gray-600 cursor-pointer"
-            >
-              <CloseCircleIcon />
-            </button>
-          )}
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center pointer-events-none">
+          <div
+            className={`absolute inset-0 transition-opacity duration-150 flex items-center justify-center text-gray-300 ${
+              searchTerm ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <SearchIcon />
+          </div>
+          <button
+            onClick={onClear}
+            type="button"
+            className={`absolute inset-0 transition-opacity duration-150 flex items-center justify-center text-gray-400 hover:text-red-500 pointer-events-auto ${
+              searchTerm ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ visibility: searchTerm ? "visible" : "hidden" }}
+          >
+            <CloseCircleIcon />
+          </button>
         </div>
       </div>
 
