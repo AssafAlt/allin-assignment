@@ -9,23 +9,12 @@ interface CitySelectorProps {
 }
 
 export default function CitySelector({ onSelect }: CitySelectorProps) {
-  const {
-    searchTerm,
-    setSearchTerm,
-    selectSearchTerm,
-    items,
-    loading,
-    hasMore,
-    isOpen,
-    setIsOpen,
-    loadMoreRef,
-    activeIndex,
-    onKeyDown,
-  } = useAutocomplete<CityResponse>({
-    fetchUrl: (term, page) =>
-      `/api/cities?search=${encodeURIComponent(term)}&page=${page}`,
-    deps: [],
-  });
+  const { selectSearchTerm, setIsOpen, setSearchTerm, ...autocompleteProps } =
+    useAutocomplete<CityResponse>({
+      fetchUrl: (term, page) =>
+        `/api/cities?search=${encodeURIComponent(term)}&page=${page}`,
+      deps: [],
+    });
 
   const handleSelect = (city: CityResponse) => {
     selectSearchTerm(city.cityName);
@@ -43,19 +32,12 @@ export default function CitySelector({ onSelect }: CitySelectorProps) {
     <BaseSelector
       label="עיר"
       placeholder="תתחיל לחפש את שם העיר..."
-      searchTerm={searchTerm}
       setSearchTerm={setSearchTerm}
-      isOpen={isOpen}
       setIsOpen={setIsOpen}
-      items={items}
-      loading={loading}
-      hasMore={hasMore}
       onClear={handleClear}
       onSelect={handleSelect}
-      loadMoreRef={loadMoreRef}
       displayKeys={{ name: "cityName", symbol: "citySymbol" }}
-      activeIndex={activeIndex}
-      onKeyDown={onKeyDown}
+      {...autocompleteProps}
     />
   );
 }

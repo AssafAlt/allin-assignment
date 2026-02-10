@@ -2,6 +2,8 @@
 
 import { useRef, useEffect, useLayoutEffect } from "react";
 import { BaseSelectorProps } from "@/types/selector";
+import { CloseCircleIcon } from "../icons/CloseCircleIcon";
+import { SearchIcon } from "../icons/SearchIcon";
 
 export default function BaseSelector<T>({
   label,
@@ -70,27 +72,25 @@ export default function BaseSelector<T>({
           disabled={disabled}
         />
 
-        <div className="absolute left-3 top-3.5 flex items-center gap-2">
-          {searchTerm && !loading && (
-            <button
-              onClick={onClear}
-              type="button"
-              className="text-gray-400 hover:text-gray-600 cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          )}
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center pointer-events-none">
+          <div
+            className={`absolute inset-0 transition-opacity duration-150 flex items-center justify-center text-gray-300 ${
+              searchTerm ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <SearchIcon />
+          </div>
+          <button
+            onClick={onClear}
+            type="button"
+            className={`absolute inset-0 transition-opacity duration-150 flex items-center justify-center text-gray-400 hover:text-gray-500 cursor-pointer ${
+              searchTerm
+                ? "opacity-100 pointer-events-auto "
+                : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <CloseCircleIcon />
+          </button>
         </div>
       </div>
 
@@ -128,7 +128,7 @@ export default function BaseSelector<T>({
           )}
 
           <div
-            ref={loadMoreRef as any}
+            ref={loadMoreRef}
             className="h-10 flex items-center justify-center"
           >
             {hasMore && !loading && (

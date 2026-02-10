@@ -14,10 +14,8 @@ export default function AddressSearchContainer() {
   );
 
   const handleCitySelect = (city: CityResponse | null) => {
-    if (city?.citySymbol !== selectedCity?.citySymbol) {
-      setSelectedCity(city);
-      setSelectedStreet(null);
-    }
+    setSelectedCity(city);
+    setSelectedStreet(null);
   };
 
   return (
