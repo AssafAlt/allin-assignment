@@ -15,9 +15,12 @@ bun dev
 ```
 
 ## Development
-To use this project locally 
+To use this project locally run
 
 ```bash
+    git clone <repository-url>
+    cd allin-assignment
+    npm install
     npx prisma generate
     npx prisma db push
     npx prisma db seed
