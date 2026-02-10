@@ -3,29 +3,34 @@
 import { CityResponse } from "@/types/city";
 import BaseSelector from "./base-selector";
 import { useAutocomplete } from "@/hooks/use-autocomplete";
+import { useState } from "react";
+import { fetchCities } from "@/services/client/city-api";
 
 interface CitySelectorProps {
   onSelect: (city: CityResponse | null) => void;
 }
 
 export default function CitySelector({ onSelect }: CitySelectorProps) {
+  const [lastSelected, setLastSelected] = useState<string | null>(null);
   const { selectSearchTerm, setIsOpen, setSearchTerm, ...autocompleteProps } =
-    useAutocomplete<CityResponse>({
-      fetchUrl: (term, page) =>
-        `/api/cities?search=${encodeURIComponent(term)}&page=${page}`,
-      deps: [],
+    useAutocomplete({
+      onFetch: async (term, page) => {
+        if (term === lastSelected) return { items: [], hasMore: false };
+        return fetchCities({ term, page });
+      },
     });
 
   const handleSelect = (city: CityResponse) => {
+    setLastSelected(city.cityName);
     selectSearchTerm(city.cityName);
-    setIsOpen(false);
     onSelect(city);
   };
 
   const handleClear = () => {
+    setLastSelected(null);
     setSearchTerm("");
-    onSelect(null);
     setIsOpen(false);
+    onSelect(null);
   };
 
   return (
