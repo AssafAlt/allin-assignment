@@ -83,10 +83,11 @@ export default function BaseSelector<T>({
           <button
             onClick={onClear}
             type="button"
-            className={`absolute inset-0 transition-opacity duration-150 flex items-center justify-center text-gray-400 hover:text-red-500 pointer-events-auto ${
-              searchTerm ? "opacity-100" : "opacity-0"
+            className={`absolute inset-0 transition-opacity duration-150 flex items-center justify-center text-gray-400 hover:text-gray-500 cursor-pointer ${
+              searchTerm
+                ? "opacity-100 pointer-events-auto "
+                : "opacity-0 pointer-events-none"
             }`}
-            style={{ visibility: searchTerm ? "visible" : "hidden" }}
           >
             <CloseCircleIcon />
           </button>

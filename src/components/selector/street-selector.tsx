@@ -36,7 +36,9 @@ export default function StreetSelector({
   return (
     <BaseSelector
       label="רחוב"
-      placeholder={citySymbol ? "תתחיל לחפש את העיר..." : "קודם כל תבחר עיר"}
+      placeholder={
+        citySymbol ? "תתחיל לחפש את שם הרחוב..." : "קודם כל תבחר עיר"
+      }
       setSearchTerm={setSearchTerm}
       setIsOpen={setIsOpen}
       onClear={handleClear}
