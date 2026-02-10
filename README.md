@@ -34,7 +34,7 @@ To deploy this project run
 ```bash
   git clone <repository-url>
   cd allin-assignment
-  docker-compose up --build
+  docker-compose up --build -d
 ```
 Thats All!
 
