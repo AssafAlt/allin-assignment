@@ -1,4 +1,4 @@
-import { getStreetsByCity } from "@/services/street-service";
+import { getStreetsByCity } from "@/services/server/street-service";
 import { apiError, apiSuccess, getSearchParams } from "@/lib/api-utils";
 
 export async function GET(request: Request) {

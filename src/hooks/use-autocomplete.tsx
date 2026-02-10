@@ -1,19 +1,12 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  DependencyList,
-} from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useIntersectionObserver } from "./use-intersection-observer";
 import { PaginatedResponse } from "@/types/service";
 
-interface UseAutocompleteProps {
-  fetchUrl: (searchTerm: string, page: number) => string;
+interface UseAutocompleteProps<T> {
+  onFetch: (searchTerm: string, page: number) => Promise<PaginatedResponse<T>>;
   enabled?: boolean;
-  deps?: DependencyList;
 }
 
 interface UseAutocompleteReturn<T> {
@@ -34,10 +27,9 @@ interface UseAutocompleteReturn<T> {
 }
 
 export function useAutocomplete<T>({
-  fetchUrl,
+  onFetch,
   enabled = true,
-  deps = [],
-}: UseAutocompleteProps): UseAutocompleteReturn<T> {
+}: UseAutocompleteProps<T>): UseAutocompleteReturn<T> {
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState<T[]>([]);
   const [page, setPage] = useState(0);
@@ -45,16 +37,19 @@ export function useAutocomplete<T>({
   const [hasMore, setHasMore] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const isChangeBySelect = useRef(false);
   const prevItemsLength = useRef(items.length);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const stableFetchUrl = useCallback(fetchUrl, deps);
+  const onFetchRef = useRef(onFetch);
+  onFetchRef.current = onFetch;
+
+  const enabledRef = useRef(enabled);
+  enabledRef.current = enabled;
 
   const fetchData = useCallback(
     async (pageNum: number, isNew: boolean, currentTerm: string) => {
-      if (!enabled) return;
+      if (!enabledRef.current) return;
 
       abortControllerRef.current?.abort();
 
@@ -64,11 +59,7 @@ export function useAutocomplete<T>({
       setLoading(true);
 
       try {
-        const url = stableFetchUrl(currentTerm, pageNum);
-        const res = await fetch(url, { signal: controller.signal });
-
-        if (!res.ok) throw new Error("Fetch failed");
-        const data: PaginatedResponse<T> = await res.json();
+        const data = await onFetchRef.current(currentTerm, pageNum);
 
         if (!controller.signal.aborted) {
           setItems((prev) => (isNew ? data.items : [...prev, ...data.items]));
@@ -87,28 +78,23 @@ export function useAutocomplete<T>({
         }
       }
     },
-    [stableFetchUrl, enabled],
+    [],
   );
 
   const selectSearchTerm = useCallback((newTerm: string) => {
-    isChangeBySelect.current = true;
     setSearchTerm(newTerm);
     setIsOpen(false);
   }, []);
 
   useEffect(() => {
-    if (isChangeBySelect.current) {
-      isChangeBySelect.current = false;
-      return;
-    }
+    if (!enabled) return;
+
     const handler = setTimeout(() => {
       fetchData(0, true, searchTerm);
     }, 300);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm, fetchData]);
+    return () => clearTimeout(handler);
+  }, [searchTerm, fetchData, enabled]);
 
   const loadMoreRef = useIntersectionObserver(
     () => {

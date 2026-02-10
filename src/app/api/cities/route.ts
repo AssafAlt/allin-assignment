@@ -1,4 +1,4 @@
-import { getCities } from "@/services/city-service";
+import { getCities } from "@/services/server/city-service";
 import { apiError, apiSuccess, getSearchParams } from "@/lib/api-utils";
 
 export async function GET(request: Request) {
