@@ -4,7 +4,6 @@ import "./globals.css";
 import { isDatabaseConnected } from "@/lib/db-health";
 import DbErrorPage from "@/components/db-error-page";
 
-// FORCE Next.js to run this check on every request, not during build
 export const dynamic = "force-dynamic";
 
 const geistSans = Geist({
