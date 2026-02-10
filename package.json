@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prod:start": "npx prisma db push && npx prisma db seed && DATABASE_URL=$DATABASE_URL next start"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",

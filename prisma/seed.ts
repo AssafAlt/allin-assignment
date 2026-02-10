@@ -1,21 +1,35 @@
-import { PrismaClient, Prisma } from "@/app/generated/prisma/client";
+import { PrismaClient } from "../src/app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 import { cities } from "../data/cities";
 import { streets } from "../data/streets";
 
-const adapter = new PrismaPg({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
+
+const adapter = new PrismaPg(pool);
 
 const prisma = new PrismaClient({
   adapter,
 });
 
 async function main() {
-  console.log("Emptying database...");
-  await prisma.street.deleteMany();
-  await prisma.city.deleteMany();
+  const forceReseed = process.env.FORCE_RESEED === "true";
+  const cityCount = await prisma.city.count();
+
+  if (!forceReseed && cityCount > 0) {
+    console.log(
+      "🏙️ Data exists. Skipping seed. (Set FORCE_RESEED=true to override)",
+    );
+    return;
+  }
+  if (forceReseed) {
+    console.log("⚠️ FORCE_RESEED detected. Emptying database...");
+    await prisma.street.deleteMany();
+    await prisma.city.deleteMany();
+  }
 
   console.log("Seeding cities...");
 
@@ -36,7 +50,6 @@ async function main() {
   });
 
   console.log("Seeding streets...");
-  // Bulk insert streets
   await prisma.street.createMany({
     data: streets.map((street: any) => ({
       id: street._id,
