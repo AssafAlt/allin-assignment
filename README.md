@@ -14,6 +14,16 @@ pnpm dev
 bun dev
 ```
 
+## Development
+To use this project locally 
+
+```bash
+    npx prisma generate
+    npx prisma db push
+    npx prisma db seed
+```
+
+
 ## Deployment
 
 To deploy this project run
